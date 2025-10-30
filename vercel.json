@@ -1,6 +1,8 @@
 {
   "version": 2,
-  "outputDirectory": "Frontend/dist",
+  "build": {
+    "outputDirectory": "Frontend/dist"
+  },
   "builds": [
     {
       "src": "Backend/main.py",
