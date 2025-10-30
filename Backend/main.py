@@ -2,6 +2,7 @@ import flask
 import sqlite3
 import cryptography.fernet
 import os
+from flask_cors import CORS
 
 banco = sqlite3.connect("bancoprincipal.db", check_same_thread=False)
 
@@ -40,6 +41,7 @@ if comando.execute('SELECT * FROM usuario').fetchall() == []:
 banco.commit()   
 
 app = flask.Flask(__name__, static_folder='./dist', static_url_path='/api')
+CORS(app)
 app.config['UPLOAD_FOLDER'] = 'static'
 
 
