@@ -22,15 +22,5 @@
       "src": "/(.*)",
       "dest": "/Frontend/dist/index.html"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/Backend/main.py"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/Frontend/dist/index.html"
-    }
   ]
 }
