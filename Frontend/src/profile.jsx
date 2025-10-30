@@ -10,7 +10,7 @@ function Profile(){
             const data = {
                 idendficação: localStorage.getItem("idendificação")
             }
-            axios.post("/api/getcontas", data)
+            axios.post("https://chattr-16i4.onrender.com/api/getcontas", data)
                 .then(Response => {
                     setperfil(Response.data[0][2])
                 })
@@ -34,7 +34,7 @@ function Profile(){
         data.append("idendficação", localStorage.getItem("idendificação"))
         data.append("nome", nometrocar)
         console.log(data)
-        axios.post("/api/enviar-imagem", data, {headers: {'Content-Type': 'multipart/form-data'}})
+        axios.post("https://chattr-16i4.onrender.com/api/enviar-imagem", data, {headers: {'Content-Type': 'multipart/form-data'}})
             .then(Response => {
                 if(Response.data == "imagem recebida"){
                     window.location.reload()

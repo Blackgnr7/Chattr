@@ -11,7 +11,7 @@ function Home(){
             const data = {
                 idendficação: localStorage.getItem("idendificação")
             }
-            axios.post("/api/getcontas", data)
+            axios.post("https://chattr-16i4.onrender.com/api/getcontas", data)
                 .then(Response => {
                     setperfil(Response.data[0][2])
                 })
@@ -26,7 +26,7 @@ function Home(){
         enviar.innerText = ""
     }
     const todas = () => {
-        axios.get("/api/recebermensagem")
+        axios.get("https://chattr-16i4.onrender.com/api/recebermensagem")
         .then(Response => {
             let i = 0
             document.querySelectorAll("#exemple ~ div").forEach(e => e.remove());
@@ -79,7 +79,7 @@ function Home(){
             idendificação: localStorage.getItem("idendificação"),
             mensagem: document.getElementById("colocaresquever").innerText
         }
-        axios.post("/api/enviar-mesnsagem", data)
+        axios.post("https://chattr-16i4.onrender.com/api/enviar-mesnsagem", data)
             .then((Response) => {
                 console.log(Response.data)
             })

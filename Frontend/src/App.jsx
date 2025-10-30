@@ -32,7 +32,7 @@ function App() {
       const data = {
         idendficação: localStorage.getItem("idendificação")
       }
-        axios.post("/api/getcontas", data)
+        axios.post("https://chattr-16i4.onrender.com/api/getcontas", data)
           .then(Response => {
             console.log(Response.data[0][2])
             setperfil(Response.data[0][2])
@@ -68,7 +68,7 @@ function App() {
         nome: document.getElementById("login.user").value,
         senha: document.getElementById("login.password").value
       }
-      axios.post("/api/login", data)
+      axios.post("https://chattr-16i4.onrender.com/api/login", data)
         .then((Response) => {
           if(Response.data == "usuario não achado"){
             console.log("deu erro")
@@ -90,7 +90,7 @@ function App() {
         nome: document.getElementById("cadrasto.user").value,
         senha: document.getElementById("cadrasto.password").value
       }
-      axios.post("/api/cadrasto", data)
+      axios.post("https://chattr-16i4.onrender.com/api/cadrasto", data)
         .then((Response) => {
           if(Response.data == "usuario ja existe"){
             console.log("deu erro")
