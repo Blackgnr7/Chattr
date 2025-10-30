@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "build": {
-    "outputDirectory": "Frontend/dist"
-  },
   "builds": [
     {
       "src": "Backend/main.py",
@@ -12,18 +9,18 @@
       "src": "Frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "Frontend/dist"
+        "distDir": "dist"
       }
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "Backend/main.py"
+      "destination": "/Backend/main.py"
     },
     {
       "source": "/(.*)",
-      "destination": "Frontend/dist/index.html"
+      "destination": "/Frontend/dist/index.html"
     }
   ]
 }
