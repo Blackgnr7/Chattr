@@ -8,8 +8,7 @@ export default defineConfig({
   server:{
     proxy:{
       '/api': {
-        target: 'https://chattr-16i4.onrender.com/', // Altere para o URL do seu backend ou site de destino
-        changeOrigin: true, // Garante que o cabeçalho 'Host' seja alterado para o destino
+        target: 'https://chattr-16i4.onrender.com', // Altere para o URL do seu backend ou site de destino
       },
     }
   }
