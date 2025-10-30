@@ -6,34 +6,7 @@ function Home(){
 
     useEffect(() => {
         document.getElementById("enviarmensagem").disabled = true
-        const todas = () => {
-            axios.get("/api/recebermensagem")
-            .then(Response => {
-                let i = 0
-                console.log(Response.data)
-                document.querySelectorAll("#exemple ~ div").forEach(e => e.remove());
-                while(true){
-                    if(Response.data[i] == undefined){
-                        break
-                    }else{
-                        const div = document.createElement("div")
-                        div.className = "p-5"
-                        div.innerHTML = `<div class="flex justify-normal">
-                            <img src="/`+Response.data[i].fotodeperfil+`.png" width="64px" height="64px" class="mr-5 mb-5 rounded-full"/>
-                            <p class="text-gray-500">`+Response.data[i].nome+`</p><p class="text-emerald-600 ml-2">`+Response.data[i].usuario_id+`</p>
-                        </div>
-                        <div class="sm:max-w-96 max-w-52">  
-                            <span class="dark:text-white text-black max-w-60 text-justify">`+Response.data[i].mensagem+`</span>
-                        </div>`
-                        document.getElementById("exemple").after(div)
-                        i++
-                    }
-                }
-            })
-            .catch(erro => {
-                console.log(erro)
-            })
-        };const intervalId = setInterval(todas, 5000);
+        const intervalId = setInterval(todas, 5000);
         const todascontas = () => {
             const data = {
                 idendficação: localStorage.getItem("idendificação")
@@ -52,6 +25,37 @@ function Home(){
         const enviar = document.getElementById("colocaresquever")
         enviar.innerText = ""
     }
+    const todas = () => {
+        axios.get("/api/recebermensagem")
+        .then(Response => {
+            let i = 0
+            document.querySelectorAll("#exemple ~ div").forEach(e => e.remove());
+            while(true){
+                if(Response.data[i] == undefined){
+                    break
+                }else{
+                    if(i==50){
+                        break
+                    }else{
+                        const div = document.createElement("div")
+                        div.className = "p-5"
+                        div.innerHTML = `<div class="flex justify-normal">
+                            <img src="/`+Response.data[i].fotodeperfil+`.png" width="64px" height="64px" class="mr-5 mb-5 rounded-full"/>
+                            <p class="text-gray-500">`+Response.data[i].nome+`</p><p class="text-emerald-600 ml-2">`+Response.data[i].usuario_id+`</p>
+                        </div>
+                        <div class="sm:max-w-96 max-w-52">  
+                            <span class="dark:text-white text-black max-w-60 text-justify">`+Response.data[i].mensagem+`</span>
+                        </div>`
+                        document.getElementById("exemple").after(div)
+                    i++
+                    }
+                }
+            }
+        })
+        .catch(erro => {
+            console.log(erro)
+        })
+    };
     const colocaresqueverid = () =>{
         let pode = false
         const botão = document.getElementById("enviarmensagem")
@@ -82,11 +86,17 @@ function Home(){
             .catch(erro => {
                 console.log(erro)
             })
-        window.location.reload(true)
+        for (let index = 0; index < 51; index++) {
+            if(index == 50){
+                todas()
+            }else{
+                continue    
+            }
+        }
     }
     return(
         <>
-        <div className="h-full border-2 dark:bg-black dark:border-white bg-white border-black justify-self-center">
+        <div className="h-full border-2 dark:bg-black dark:border-white bg-white border-black justify-self-center m-6 md:ml-44 md:mr-44">
             <div className="border-2">
                 <div id="Comentar" className="flex justify-normal p-5">
                     <div className="pr-9">

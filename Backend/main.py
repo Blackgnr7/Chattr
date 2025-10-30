@@ -4,6 +4,7 @@ import cryptography.fernet
 import os
 
 banco = sqlite3.connect("bancoprincipal.db", check_same_thread=False)
+
 comando = banco.cursor()
 
 key = cryptography.fernet.Fernet.generate_key()
@@ -18,8 +19,19 @@ comando.execute(
         senha TEXT NOT NULL,
         Foto_de_perfil TEXT NOT NULL,
         indentificação TEXT NOT NULL
-    )
-'''
+    )'''
+)
+comando.execute(
+    '''
+    CREATE TABLE IF NOT EXISTS mensagem(
+        id INTEGER PRIMARY KEY,
+        usuario_id INTEGER,
+        nome_de_usuario TEXT NOT NULL,
+        mensagem TEXT NOT NULL,
+        foto_de_perfil TEXT NOT NULL,
+        indetificação TEXT NOT NULL
+        )
+    '''
 )
 
 if comando.execute('SELECT * FROM usuario').fetchall() == []:
@@ -89,17 +101,6 @@ def enviar_mesnsagem():
     if(comando.execute('SELECT * FROM usuario WHERE indentificação = ?', (indentificação,)).fetchall() != []):
         data = comando.execute('SELECT * FROM usuario WHERE indentificação = ?', (indentificação,)).fetchall()
         print(data, mensagem)
-        comando.execute('''
-            CREATE TABLE IF NOT EXISTS mensagem(
-                id INTEGER PRIMARY KEY,
-                usuario_id INTEGER,
-                nome_de_usuario TEXT NOT NULL,
-                mensagem TEXT NOT NULL,
-                foto_de_perfil TEXT NOT NULL,
-                indetificação TEXT NOT NULL
-            )
-        '''
-        )
         banco.commit()
         comando.execute('INSERT INTO mensagem (usuario_id, nome_de_usuario, mensagem, indetificação, foto_de_perfil) VALUES (?, ?, ?, ?, ?)', (data[0][0], data[0][1], mensagem, indentificação, data[0][3],))
         banco.commit()
@@ -125,10 +126,15 @@ def getcontas():
 
 @app.route('/api/enviar-imagem', methods=['POST'])
 def upload():
-    imagem = flask.request.files['imagem']
     idendficação = flask.request.form['idendficação']
-    imagem.save(os.path.join(app.config['UPLOAD_FOLDER'], idendficação + '.png'))
+    nome = flask.request.form['nome']
+    if "imagem" not in flask.request.files:
+        pass
+    else:
+        imagem = flask.request.files['imagem']
+        imagem.save(os.path.join(app.config['UPLOAD_FOLDER'], idendficação + '.png'))
     comando.execute('UPDATE usuario SET Foto_de_perfil = ? WHERE indentificação = ?', (idendficação, idendficação))
+    comando.execute('UPDATE usuario SET nome = ? WHERE indentificação = ?', (nome, idendficação))
     banco.commit()
     return "imagem recebida"
 

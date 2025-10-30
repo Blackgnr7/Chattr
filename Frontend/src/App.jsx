@@ -23,6 +23,7 @@ function App() {
       }
       if(thema == "light"){
         document.getElementById("1").innerText = "dark"
+        console.log(perfil)
       }if(thema == "dark"){
         document.getElementById("1").innerText = "light"
       }
@@ -33,6 +34,7 @@ function App() {
       }
         axios.post("/api/getcontas", data)
           .then(Response => {
+            console.log(Response.data[0][2])
             setperfil(Response.data[0][2])
           })
           .catch(erro => {
