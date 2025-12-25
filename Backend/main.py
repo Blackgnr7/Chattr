@@ -3,6 +3,7 @@ import sqlite3
 import cryptography.fernet
 import os
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 
 banco = sqlite3.connect("bancoprincipal.db", check_same_thread=False)
 
@@ -40,9 +41,19 @@ if comando.execute('SELECT * FROM usuario').fetchall() == []:
 
 banco.commit()   
 
-app = flask.Flask(__name__, static_folder='./dist', static_url_path='/api')
+app = flask.Flask(__name__)
+socket = SocketIO(app, cors_allowed_origins="*")
 CORS(app)
-app.config['UPLOAD_FOLDER'] = 'static'
+
+@socket.on("envio_mensagem")
+def enviarão(data=None):
+    print("enviado")
+    emit("receber_mensagem", "enviarão_mensagem")
+
+@socket.on("connect")
+def connectdado():
+    print({flask.request.sid})
+    emit("server_response", {"data": f"id: `{flask.request.sid} conectado"})
 
 
 @app.route('/')
@@ -64,7 +75,6 @@ def login():
     data = flask.request.get_json()
     nome = data.get("nome")
     senha = data.get("senha")
-    print(nome, senha)
     if(comando.execute('SELECT * FROM usuario WHERE nome = ? AND senha = ?', (nome, senha)).fetchall() != []):
         indentificação = comando.execute('SELECT indentificação FROM usuario WHERE nome = ? AND senha = ?', (nome, senha)).fetchall()  
         id = comando.execute('SELECT id FROM usuario WHERE nome = ? AND senha = ?', (nome, senha)).fetchall()  
@@ -90,7 +100,6 @@ def cadrasto():
                 else:
                     continue
         else:
-            print("usuario ja existe")
             return "usuario ja existe"
 
 @app.route('/api/enviar-mesnsagem', methods=["POST"])
@@ -99,10 +108,8 @@ def enviar_mesnsagem():
     mensagem = data.get("mensagem")
     indentificação = data.get("idendificação")
     indentificação = indentificação
-    print(indentificação, mensagem)
     if(comando.execute('SELECT * FROM usuario WHERE indentificação = ?', (indentificação,)).fetchall() != []):
         data = comando.execute('SELECT * FROM usuario WHERE indentificação = ?', (indentificação,)).fetchall()
-        print(data, mensagem)
         banco.commit()
         comando.execute('INSERT INTO mensagem (usuario_id, nome_de_usuario, mensagem, indetificação, foto_de_perfil) VALUES (?, ?, ?, ?, ?)', (data[0][0], data[0][1], mensagem, indentificação, data[0][3],))
         banco.commit()
@@ -114,7 +121,6 @@ def enviar_mesnsagem():
 def receber_mesnsagem():
     comando.execute('SELECT usuario_id, mensagem, foto_de_perfil,nome_de_usuario FROM mensagem')
     mensagens = comando.fetchall()
-    print(mensagens)
     return {i: {"usuario_id": mensagens[i][0], "mensagem": mensagens[i][1], "fotodeperfil": mensagens[i][2], "nome": mensagens[i][3]} for i in range(len(mensagens))}
 
 @app.route('/api/getcontas', methods=['POST'])
@@ -123,7 +129,6 @@ def getcontas():
     indentificação = data.get("idendficação")
     comando.execute('SELECT id, nome, Foto_de_perfil FROM usuario WHERE indentificação = ?', (indentificação,))
     conta = comando.fetchall()
-    print(conta)
     return conta
 
 @app.route('/api/enviar-imagem', methods=['POST'])
@@ -134,11 +139,11 @@ def upload():
         pass
     else:
         imagem = flask.request.files['imagem']
-        imagem.save(os.path.join(app.config['UPLOAD_FOLDER'], idendficação + '.png'))
     comando.execute('UPDATE usuario SET Foto_de_perfil = ? WHERE indentificação = ?', (idendficação, idendficação))
     comando.execute('UPDATE usuario SET nome = ? WHERE indentificação = ?', (nome, idendficação))
     banco.commit()
     return "imagem recebida"
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    socket.run(app,debug=True)
+    """ app.run(debug=True, port=5000) """

@@ -1,17 +1,26 @@
 import {useEffect, useState} from "react"
 import axios, { Axios } from "axios"
+import {io} from 'socket.io-client'
+
+const socket = io("http://127.0.0.1:5000")
 
 function Home(){
     const [perfil, setperfil] = useState()
 
     useEffect(() => {
         document.getElementById("enviarmensagem").disabled = true
-        const intervalId = setInterval(todas, 5000);
+        socket.on("connect", (data) =>{
+            console.log("Connected to server:", socket.id, data);
+        })
+        socket.on("receber_mensagem", (data) =>{
+            console.log("consegui")
+            todas()
+        })
         const todascontas = () => {
             const data = {
                 idendficação: localStorage.getItem("idendificação")
             }
-            axios.post("https://chattr-16i4.onrender.com/api/getcontas", data)
+            axios.post("http://127.0.0.1:5000/api/getcontas", data)
                 .then(Response => {
                     setperfil(Response.data[0][2])
                 })
@@ -19,14 +28,14 @@ function Home(){
                     console.log(erro)
                 })
         };todascontas()
-        return () => clearInterval(intervalId);
+        todas()
     }, []);
     const escrever = () =>{
         const enviar = document.getElementById("colocaresquever")
         enviar.innerText = ""
     }
     const todas = () => {
-        axios.get("https://chattr-16i4.onrender.com/api/recebermensagem")
+        axios.get("http://127.0.0.1:5000/api/recebermensagem")
         .then(Response => {
             let i = 0
             document.querySelectorAll("#exemple ~ div").forEach(e => e.remove());
@@ -79,20 +88,16 @@ function Home(){
             idendificação: localStorage.getItem("idendificação"),
             mensagem: document.getElementById("colocaresquever").innerText
         }
-        axios.post("https://chattr-16i4.onrender.com/api/enviar-mesnsagem", data)
+        axios.post("http://127.0.0.1:5000/api/enviar-mesnsagem", data)
             .then((Response) => {
                 console.log(Response.data)
+                socket.emit("envio_mensagem", {
+                    status: "enviado",
+                })
             })
             .catch(erro => {
                 console.log(erro)
             })
-        for (let index = 0; index < 51; index++) {
-            if(index == 50){
-                todas()
-            }else{
-                continue    
-            }
-        }
     }
     return(
         <>
